@@ -1,35 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import TurboTable from "./components/TurboTable";
+import useTableData from "./hooks/useTableData";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import "@radix-ui/themes/styles.css";
+import { Box, Container, Heading } from "@radix-ui/themes";
+const App: React.FC = () => {
+  const { data, fetchData, pageCount } = useTableData(
+    "https://jsonplaceholder.typicode.com/users"
+  );
+  console.log("Data", data);
 
-function App() {
-  const [count, setCount] = useState(0)
+  const columnHelper = createColumnHelper<User>();
+
+  const columns = [
+    columnHelper.accessor("id", {
+      header: "ID",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("username", {
+      header: "Username",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("email", {
+      header: "Email",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor(
+      (row) => `${row.address.street}, ${row.address.city}`,
+      {
+        id: "address",
+        header: "Address",
+        cell: (info) => info.getValue(),
+      }
+    ),
+    columnHelper.accessor("phone", {
+      header: "Phone",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("website", {
+      header: "Website",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor((row) => row.company.name, {
+      id: "company",
+      header: "Company",
+      cell: (info) => info.getValue(),
+    }),
+  ];
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Box>
+      <Container size="4">
+        <Heading>Turbo Table</Heading>
+        <TurboTable
+          data={data}
+          columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
+          fetchData={fetchData}
+          pageCount={pageCount}
+        />
+      </Container>
+    </Box>
+  );
+};
 
-export default App
+export default App;
