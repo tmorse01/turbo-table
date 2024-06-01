@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const useTableData = (url: string) => {
@@ -6,7 +6,7 @@ const useTableData = (url: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [pageCount, setPageCount] = useState<number>(0);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(url);
       setData(response.data);
@@ -16,11 +16,11 @@ const useTableData = (url: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [url]);
 
   useEffect(() => {
     fetchData();
-  }, [url]);
+  }, [fetchData, url]);
 
   return { data, fetchData, loading, pageCount };
 };
