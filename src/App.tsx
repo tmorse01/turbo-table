@@ -2,8 +2,10 @@ import React from "react";
 import TurboTable from "./components/TurboTable";
 import useTableData from "./hooks/useTableData";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import "@radix-ui/themes/styles.css";
 import { Box, Container, Heading } from "@radix-ui/themes";
+import "./App.css";
+import "@radix-ui/themes/styles.css";
+
 const App: React.FC = () => {
   const { data, pageCount } = useTableData(
     "https://api.openbrewerydb.org/v1/breweries"
@@ -23,14 +25,6 @@ const App: React.FC = () => {
     }),
     columnHelper.accessor("address_1", {
       header: "Address 1",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("address_2", {
-      header: "Address 2",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("address_3", {
-      header: "Address 3",
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("city", {
@@ -76,13 +70,13 @@ const App: React.FC = () => {
   ];
 
   return (
-    <Box>
+    <Box p={"4"}>
       <Container size="4">
         <Heading>Turbo Table</Heading>
         <TurboTable
           data={data}
           columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-          maxHeight={"500px"}
+          height={"500px"}
           width={"100%"}
         />
       </Container>
