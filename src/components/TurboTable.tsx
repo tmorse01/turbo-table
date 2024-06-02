@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Button, Flex, Grid, Table } from "@radix-ui/themes";
 import {
   useReactTable,
   flexRender,
   getCoreRowModel,
   ColumnDef,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { Data } from "../types/Table";
+import Pagination from "./Pagination";
 // import "../styles/Table.css";
 
 interface TurboTableProps {
@@ -16,35 +18,20 @@ interface TurboTableProps {
   pageCount: number;
 }
 
-const TurboTable: React.FC<TurboTableProps> = ({
-  data,
-  columns,
-  fetchData,
-}) => {
-  const [loading, setLoading] = useState(false);
-
+const TurboTable: React.FC<TurboTableProps> = ({ data, columns }) => {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await fetchData();
-      setLoading(false);
-    };
-
-    loadData();
-  }, [
-    table.getState().pagination.pageIndex,
-    table.getState().pagination.pageSize,
-  ]);
+  console.log("Table", table.getState());
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageSize = table.getState().pagination.pageSize;
+  const pageCount = data.length / pageSize;
 
   return (
     <Grid gap="3">
-      {loading && <div>Loading...</div>}
       <Table.Root>
         <Table.Header>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -76,6 +63,16 @@ const TurboTable: React.FC<TurboTableProps> = ({
         </Table.Body>
       </Table.Root>
       <Flex gap="3">
+        <Pagination
+          handleFirstPage={table.firstPage}
+          handlePreviousPage={table.previousPage}
+          handleNextPage={table.nextPage}
+          handleLastPage={table.lastPage}
+          canPreviousPage={table.getCanPreviousPage}
+          canNextPage={table.getCanNextPage}
+          currentPage={pageIndex}
+          pageCount={pageCount}
+        />
         <Button onClick={() => table.setPageSize(10)}>Show 10</Button>
         <Button onClick={() => table.setPageSize(20)}>Show 20</Button>
       </Flex>
