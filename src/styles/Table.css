@@ -1,0 +1,14 @@
+.table-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.table-header {
+  flex-shrink: 0;
+}
+
+.table-body {
+  flex-grow: 1;
+  overflow-y: auto;
+}

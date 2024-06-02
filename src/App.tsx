@@ -5,7 +5,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import "@radix-ui/themes/styles.css";
 import { Box, Container, Heading } from "@radix-ui/themes";
 const App: React.FC = () => {
-  const { data, fetchData, pageCount } = useTableData(
+  const { data, pageCount } = useTableData(
     "https://api.openbrewerydb.org/v1/breweries"
   );
   console.log("Data", data, pageCount);
@@ -82,8 +82,8 @@ const App: React.FC = () => {
         <TurboTable
           data={data}
           columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-          fetchData={fetchData}
-          pageCount={pageCount}
+          maxHeight={"500px"}
+          width={"100%"}
         />
       </Container>
     </Box>

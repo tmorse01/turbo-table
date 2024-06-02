@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Flex, Grid, Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import {
   useReactTable,
   flexRender,
@@ -9,31 +9,46 @@ import {
 } from "@tanstack/react-table";
 import { Data } from "../types/Table";
 import Pagination from "./Pagination";
-// import "../styles/Table.css";
+import PageSizeSelect from "./PageSizeSelect";
+import { Responsive } from "@radix-ui/themes/props";
+import "../styles/Table.css";
 
 interface TurboTableProps {
   data: Data;
   columns: ColumnDef<Record<string, unknown>, unknown>[];
-  fetchData: () => Promise<void>;
-  pageCount: number;
+  height?: Responsive<string>;
+  width?: Responsive<string>;
+  maxHeight?: Responsive<string>;
 }
 
-const TurboTable: React.FC<TurboTableProps> = ({ data, columns }) => {
+const TurboTable: React.FC<TurboTableProps> = ({
+  data,
+  columns,
+  height,
+  width,
+  maxHeight,
+}) => {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-  console.log("Table", table.getState());
+
   const pageIndex = table.getState().pagination.pageIndex;
   const pageSize = table.getState().pagination.pageSize;
-  const pageCount = data.length / pageSize;
+  const pageCount = Math.ceil(data.length / pageSize);
 
   return (
-    <Grid gap="3">
-      <Table.Root>
-        <Table.Header>
+    <Flex
+      direction="column"
+      gap="5"
+      height={height}
+      width={width}
+      maxHeight={maxHeight}
+    >
+      <Table.Root className="table-root">
+        <Table.Header className="table-header">
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Row key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -50,7 +65,7 @@ const TurboTable: React.FC<TurboTableProps> = ({ data, columns }) => {
             </Table.Row>
           ))}
         </Table.Header>
-        <Table.Body>
+        <Table.Body className="table-body">
           {table.getRowModel().rows.map((row) => (
             <Table.Row key={row.id}>
               {row.getVisibleCells().map((cell) => (
@@ -62,7 +77,7 @@ const TurboTable: React.FC<TurboTableProps> = ({ data, columns }) => {
           ))}
         </Table.Body>
       </Table.Root>
-      <Flex gap="3">
+      <Flex gap="3" justify={"end"}>
         <Pagination
           handleFirstPage={table.firstPage}
           handlePreviousPage={table.previousPage}
@@ -73,10 +88,9 @@ const TurboTable: React.FC<TurboTableProps> = ({ data, columns }) => {
           currentPage={pageIndex}
           pageCount={pageCount}
         />
-        <Button onClick={() => table.setPageSize(10)}>Show 10</Button>
-        <Button onClick={() => table.setPageSize(20)}>Show 20</Button>
+        <PageSizeSelect pageSize={pageSize} setPageSize={table.setPageSize} />
       </Flex>
-    </Grid>
+    </Flex>
   );
 };
 
