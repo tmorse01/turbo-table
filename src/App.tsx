@@ -1,8 +1,9 @@
 import React from "react";
 import TurboTable from "./components/TurboTable";
 import useTableData from "./hooks/useTableData";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { Box, Container, Heading } from "@radix-ui/themes";
+import { Columns } from "./types/Table";
 import "./App.css";
 import "@radix-ui/themes/styles.css";
 
@@ -75,9 +76,10 @@ const App: React.FC = () => {
         <Heading>Turbo Table</Heading>
         <TurboTable
           data={data}
-          columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-          height={"500px"}
+          columns={columns as Columns}
+          maxHeight="500px"
           width={"100%"}
+          stickyHeader
         />
       </Container>
     </Box>

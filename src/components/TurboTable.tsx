@@ -1,5 +1,4 @@
 import React from "react";
-import { Flex, Table } from "@radix-ui/themes";
 import {
   useReactTable,
   flexRender,
@@ -10,20 +9,22 @@ import {
 import { Data } from "../types/Table";
 import Pagination from "./Pagination";
 import PageSizeSelect from "./PageSizeSelect";
-import { Responsive } from "@radix-ui/themes/props";
 import "../styles/Table.css";
 
 interface TurboTableProps {
   data: Data;
   columns: ColumnDef<Record<string, unknown>, unknown>[];
-  height?: Responsive<string>;
-  width?: Responsive<string>;
-  maxHeight?: Responsive<string>;
+  stickyHeader?: boolean;
+  height?: string;
+  width?: string;
+  maxHeight?: string;
+  scroll?: { x: string | number; y: string | number };
 }
 
 const TurboTable: React.FC<TurboTableProps> = ({
   data,
   columns,
+  stickyHeader = false,
   height,
   width,
   maxHeight,
@@ -40,44 +41,41 @@ const TurboTable: React.FC<TurboTableProps> = ({
   const pageCount = Math.ceil(data.length / pageSize);
 
   return (
-    <Flex
-      direction="column"
-      gap="5"
-      height={height}
-      width={width}
-      maxHeight={maxHeight}
-    >
-      <Table.Root className="table-root">
-        <Table.Header className="table-header">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Table.Row key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <Table.ColumnHeaderCell
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </Table.ColumnHeaderCell>
-              ))}
-            </Table.Row>
-          ))}
-        </Table.Header>
-        <Table.Body className="table-body">
-          {table.getRowModel().rows.map((row) => (
-            <Table.Row key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <Table.Cell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Table.Cell>
-              ))}
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-      <Flex gap="3" justify={"end"}>
+    <div className="table-container" style={{ height, width, maxHeight }}>
+      <div className="table-wrapper">
+        <table className="table-root">
+          <thead className={`table-header ${stickyHeader ? "sticky" : ""}`}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="table-header-row">
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="table-header-cell"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="table-body">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="pagination-controls">
         <Pagination
           handleFirstPage={table.firstPage}
           handlePreviousPage={table.previousPage}
@@ -89,8 +87,8 @@ const TurboTable: React.FC<TurboTableProps> = ({
           pageCount={pageCount}
         />
         <PageSizeSelect pageSize={pageSize} setPageSize={table.setPageSize} />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 
